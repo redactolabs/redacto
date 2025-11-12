@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     branches:
-      - feat/release-workflow
+      - main
 
 jobs:
   build_and_release:
