@@ -36,6 +36,8 @@ jobs:
             echo "Error: Tag $TAG_NAME already exists. Please update the version in pyproject.toml before creating a new release." >&2
             exit 1
           fi
+        env:
+          GH_TOKEN: ${{ github.token }}
 
       - name: Create and push git tag
         run: |
@@ -44,3 +46,5 @@ jobs:
             -X POST \
             -f ref="refs/tags/$TAG_NAME" \
             -f sha="${GITHUB_SHA}"
+        env:
+          GH_TOKEN: ${{ github.token }}
