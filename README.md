@@ -2,16 +2,13 @@
 
 Redacto platform package. For internal use only.
 
-## Development Setup
+## Overview
 
-This package uses `uv` for dependency management and building.
+This package provides shared functionality for the Redacto platform, including:
 
-### Prerequisites
+- **Events SDK** - Pub/sub messaging with RabbitMQ and CloudEvents
 
-- Python 3.11+
-- [uv](https://github.com/astral-sh/uv) installed
-
-### Installation
+## Installation
 
 ```bash
 uv sync
@@ -22,6 +19,15 @@ This will install dependencies and the package in editable mode. To sync depende
 ```bash
 uv sync --no-install-project
 ```
+
+## Development Setup
+
+This package uses `uv` for dependency management and building.
+
+### Prerequisites
+
+- Python 3.11+
+- [uv](https://github.com/astral-sh/uv) installed
 
 ### Building
 
@@ -34,6 +40,86 @@ uv build
 This will create distribution files in the `dist/` directory.
 
 **Note:** `uv sync` and `uv run` will automatically build/install the package when needed. To skip building during these commands, use the `--no-build` flag (though this may prevent installation in editable mode).
+
+## Modules
+
+### Events SDK
+
+A Python SDK for pub/sub messaging using RabbitMQ and CloudEvents.
+
+#### Features
+
+- RabbitMQ pub/sub messaging
+- CloudEvents v1.0 specification compliance
+- Configurable connection parameters
+- Automatic reconnection
+- Type-safe event definitions
+- Flexible topology configuration
+
+#### Installation
+
+After installing the `redacto` package, you can import the Events SDK:
+
+```python
+from redacto.events import RabbitMQClient, EventType, ConfigurationError, UnsupportedEventTypeError
+```
+
+#### Usage
+
+##### Basic Client Setup
+
+```python
+import logging
+from redacto.events import ConfigurationError, RabbitMQClient, EventType, UnsupportedEventTypeError
+
+# Create a logger
+logger = logging.getLogger(__name__)
+
+# Create RabbitMQ client (rabbitmq_url is required)
+# Raises ConfigurationError if rabbitmq_url is not provided
+client = RabbitMQClient(
+    rabbitmq_url="amqp://localhost",
+    logger=logger,
+    source="https://api.myapp.com",  # Any string identifier for your service
+)
+
+# Publish an event (raises UnsupportedEventTypeError for invalid event types from client)
+try:
+    client.publish_event(
+        routing_key="user.created",
+        type=EventType.TEST_EVENT,  # Must be one of the supported EventType enums
+        data={"user_id": 123, "email": "user@example.com"}
+    )
+except UnsupportedEventTypeError as e:
+    print(f"Invalid event type: {e}")
+```
+
+##### Advanced Usage
+
+```python
+# Setup topology (exchanges and queues)
+from redacto.events import RabbitMQClient
+from redacto.events.config import setup_topology, register_subscribers
+from redacto.events.models import Subscriber, Queue
+
+client = RabbitMQClient(rabbitmq_url="amqp://localhost")
+setup_topology(client)
+
+# Register subscribers
+
+def my_callback(channel, method, properties, body):
+    print("Received message:", body)
+
+subscribers = [
+    Subscriber(queue_name=Queue.Name.USER_EVENTS, callback=my_callback)
+]
+register_subscribers(client, subscribers)
+
+# Start consuming
+client.start_consuming()
+```
+
+**Note:** For application-specific SDKs with validation, create your own EventsSDK class that wraps RabbitMQClient with your supported event types and singleton management.
 
 ## Publishing to GitHub Package Registry
 
