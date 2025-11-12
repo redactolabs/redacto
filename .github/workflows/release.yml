@@ -1,0 +1,46 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - feat/release-workflow
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v1
+
+      - name: Build package with uv
+        run: uv build
+
+      - name: Get package version
+        id: get_version
+        run: |
+          PACKAGE_VERSION=$(uv version --short)
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Check if tag already exists
+        id: check_tag
+        run: |
+          TAG_NAME="v${{ steps.get_version.outputs.PACKAGE_VERSION }}"
+          if gh api repos/${{ github.repository }}/git/refs/tags/$TAG_NAME --silent 2>/dev/null; then
+            echo "Error: Tag $TAG_NAME already exists. Please update the version in pyproject.toml before creating a new release." >&2
+            exit 1
+          fi
+
+      - name: Create and push git tag
+        run: |
+          TAG_NAME="v${{ steps.get_version.outputs.PACKAGE_VERSION }}"
+          gh api repos/${GITHUB_REPOSITORY}/git/refs \
+            -X POST \
+            -f ref="refs/tags/$TAG_NAME" \
+            -f sha="${GITHUB_SHA}"
