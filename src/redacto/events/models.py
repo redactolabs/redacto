@@ -33,9 +33,10 @@ class Queue(BaseModel):
     bindings: List[QueueBinding] = Field(default_factory=list)
 
 
-class Subscriber(BaseModel):
+class Consumer(BaseModel):
     queue_name: Queue.Name
     callback: Callable
+    auto_ack: bool = True
 
 
 class Exchange(BaseModel):

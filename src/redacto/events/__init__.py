@@ -1,7 +1,7 @@
 # Redacto Events SDK
 
-from .client import RabbitMQClient
-from .events import EventType, ALL_EVENTS
+from .client import RabbitMQClient, close_client, get_client
+from .events import ALL_EVENTS, EventType
 from .exceptions import ConfigurationError, UnsupportedEventTypeError
 
 __all__ = [
@@ -10,4 +10,6 @@ __all__ = [
     "EventType",
     "UnsupportedEventTypeError",
     "ALL_EVENTS",
+    "get_client",
+    "close_client",
 ]

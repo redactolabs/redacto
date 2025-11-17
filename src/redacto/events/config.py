@@ -1,7 +1,4 @@
-from typing import List
-
-from .client import RabbitMQClient
-from .models import Exchange, ExchangeType, Queue, QueueBinding, Subscriber
+from .models import Exchange, ExchangeType, Queue, QueueBinding
 
 EXCHANGES_AND_QUEUES = [
     Exchange(
@@ -24,46 +21,3 @@ EXCHANGES_AND_QUEUES = [
         ],
     ),
 ]
-
-
-def setup_topology(client: RabbitMQClient):
-    for exchange in EXCHANGES_AND_QUEUES:
-        client.logger.debug(
-            f"Declaring exchange: {exchange.name} (type: {exchange.type})"
-        )
-        client.declare_exchange(
-            exchange_name=exchange.name,
-            exchange_type=exchange.type,
-            durable=exchange.durable,
-            auto_delete=exchange.auto_delete,
-        )
-
-        for queue in exchange.queues:
-            client.logger.debug(f"Declaring queue: {queue.name}")
-            client.declare_queue(
-                queue_name=queue.name,
-                durable=queue.durable,
-                auto_delete=queue.auto_delete,
-                exclusive=queue.exclusive,
-            )
-
-            for binding in queue.bindings:
-                client.logger.debug(
-                    f"Binding queue {queue.name} to exchange {exchange.name} with routing key '{binding.routing_key}'"
-                )
-                client.bind_queue(
-                    queue_name=queue.name,
-                    exchange_name=exchange.name,
-                    routing_key=binding.routing_key,
-                )
-
-
-def register_subscribers(client: RabbitMQClient, subscribers: List[Subscriber]):
-    for subscriber in subscribers:
-        client.logger.debug(
-            f"Registering subscriber for queue: {subscriber.queue_name}"
-        )
-        client.add_consumer(
-            queue_name=subscriber.queue_name,
-            callback=subscriber.callback,
-        )
