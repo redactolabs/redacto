@@ -121,21 +121,22 @@ except UnsupportedEventTypeError as e:
 ```python
 # Setup topology (exchanges and queues)
 from redacto.events import RabbitMQClient
-from redacto.events.config import setup_topology, register_subscribers
-from redacto.events.models import Subscriber, Queue
+from redacto.events.models import Consumer, Queue
 
 client = RabbitMQClient(rabbitmq_url="amqp://localhost")
-setup_topology(client)
 
-# Register subscribers
+# Setup topology (exchanges and queues)
+client.setup_topology()
+
+# Register consumers
 
 def my_callback(channel, method, properties, body):
     print("Received message:", body)
 
-subscribers = [
-    Subscriber(queue_name=Queue.Name.USER_EVENTS, callback=my_callback)
+consumers = [
+    Consumer(queue_name=Queue.Name.USER_EVENTS, callback=my_callback)
 ]
-register_subscribers(client, subscribers)
+client.register_consumers(consumers)
 
 # Start consuming
 client.start_consuming()
