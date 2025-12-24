@@ -9,6 +9,7 @@ class EventType(str, Enum):
     VRM_VENDOR_SCORE_UPDATED = "vrm.vendor.score.updated"
     VRM_ASSESSMENT_STATUS_UPDATED = "vrm.assessment.status.updated"
     VRM_COMMENT_UPSERTED = "vrm.form.comments.upserted"
+    VRM_EXECUTE_POLICY = "vrm.policy.execute"
 
     def __str__(self):
         return self.value
