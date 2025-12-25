@@ -11,7 +11,7 @@ class EventType(str, Enum):
     VRM_COMMENT_UPSERTED = "vrm.form.comments.upserted"
 
     VRM_EXECUTE_POLICY = "vrm.policy.execute"
-    VRM_EVALUATE_RULE = "vrm.rule.evaluate"
+    POLICY_EVALUATE_RULE = "policy.rule.evaluate"
 
     def __str__(self):
         return self.value
