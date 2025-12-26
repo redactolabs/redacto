@@ -9,6 +9,7 @@ EXCHANGES_AND_QUEUES = [
                 name=Queue.Name.USER_EVENTS,
                 bindings=[
                     QueueBinding(routing_key="vrm.#"),
+                    QueueBinding(routing_key="policy.execute"),
                 ],
             ),
             Queue(

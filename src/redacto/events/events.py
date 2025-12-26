@@ -10,7 +10,7 @@ class EventType(str, Enum):
     VRM_ASSESSMENT_STATUS_UPDATED = "vrm.assessment.status.updated"
     VRM_COMMENT_UPSERTED = "vrm.form.comments.upserted"
 
-    VRM_EXECUTE_POLICY = "vrm.policy.execute"
+    POLICY_EXECUTE = "policy.execute"
     POLICY_EVALUATE_RULE = "policy.rule.evaluate"
 
     def __str__(self):
