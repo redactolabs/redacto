@@ -19,17 +19,19 @@ import bleach
 from bleach.css_sanitizer import CSSSanitizer
 
 from py_svg_hush import filter_svg
-from pydantic import BaseModel as Schema
 from pydantic import AfterValidator, field_validator, ValidationInfo
 
 from redacto.security.constants import BASIC_HTML_ALLOWED_ATTRIBUTES, BASIC_HTML_ALLOWED_TAGS, QUILL_STRING_INPUT_ALLOWED_ATTRIBUTES, QUILL_STRING_INPUT_ALLOWED_CSS_PROPERTIES, QUILL_STRING_INPUT_ALLOWED_TAGS
 
-# Optional HttpError import with fallback
+# Try to use Django Ninja's Schema for Django ORM integration
+# Fall back to Pydantic BaseModel for FastAPI and other frameworks
 try:
+    from ninja import Schema
     from ninja.errors import HttpError
-
 except ImportError:
     # Fallback for when Django Ninja is not installed
+    from pydantic import BaseModel as Schema
+
     class HttpError(Exception):  # type: ignore
         """Fallback HttpError class for non-Django-Ninja environments."""
 
