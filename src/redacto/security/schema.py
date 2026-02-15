@@ -34,6 +34,10 @@ from redacto.security.constants import (
 try:
     from ninja import Schema
     from ninja.errors import HttpError
+    from ninja.files import UploadedFile  # ADD THIS
+    from django.core.files.uploadedfile import (
+        UploadedFile as DjangoUploadedFile,
+    )  # ADD THIS
 except ImportError:
     # Fallback for when Django Ninja is not installed
     from pydantic import BaseModel as Schema
@@ -44,6 +48,12 @@ except ImportError:
         def __init__(self, status_code: int, message: str):
             self.status_code = status_code
             super().__init__(message)
+
+    # ADD FALLBACK TYPES for non-Django environments
+    from typing import Any
+
+    UploadedFile = Any  # type: ignore
+    DjangoUploadedFile = Any  # type: ignore
 
 
 @runtime_checkable
