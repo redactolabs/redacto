@@ -7,23 +7,8 @@ on:
       - chore/bump-up-python-version
 
 jobs:
-  lint:
-    name: Lint (Ruff)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v7
-        with:
-          version: "latest"
-      - name: Install ruff
-        run: uv pip install ruff --system
-      - name: Ruff format check
-        run: ruff format --check .
-      - name: Ruff linter
-        run: ruff check .
-
-  test:
-    name: Test (Python 3.13)
+  ci:
+    name: Lint & Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,5 +20,9 @@ jobs:
           version: "latest"
       - name: Install dependencies
         run: uv sync
+      - name: Ruff format check
+        run: uv run ruff format --check .
+      - name: Ruff linter
+        run: uv run ruff check .
       - name: Run tests
         run: uv run pytest tests/ -v
