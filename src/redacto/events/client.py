@@ -100,16 +100,12 @@ class RabbitMQClient:
             return
 
         if not self.connection or self.connection.is_closed:
-            self.logger.warning(
-                "RabbitMQ client connection lost, attempting to reconnect..."
-            )
+            self.logger.warning("RabbitMQ client connection lost, attempting to reconnect...")
             self._setup_connection()
             return
 
         if not self.publisher_channel or not self.publisher_channel.is_open:
-            self.logger.warning(
-                "RabbitMQ client channel not available, attempting to reconnect..."
-            )
+            self.logger.warning("RabbitMQ client channel not available, attempting to reconnect...")
             self._setup_connection()
             return
 
@@ -149,9 +145,7 @@ class RabbitMQClient:
     def setup_topology(self):
         """Set up RabbitMQ topology by declaring exchanges, queues, and bindings."""
         for exchange in EXCHANGES_AND_QUEUES:
-            self.logger.debug(
-                f"Declaring exchange: {exchange.name} (type: {exchange.type})"
-            )
+            self.logger.debug(f"Declaring exchange: {exchange.name} (type: {exchange.type})")
             self.declare_exchange(
                 exchange_name=exchange.name,
                 exchange_type=exchange.type,
@@ -202,9 +196,7 @@ class RabbitMQClient:
                 durable=durable,
                 auto_delete=auto_delete,
             )
-            self.logger.debug(
-                f"Declared exchange: {exchange_name} (type: {exchange_type})"
-            )
+            self.logger.debug(f"Declared exchange: {exchange_name} (type: {exchange_type})")
         except AMQPChannelError as e:
             self.logger.error(f"Failed to declare exchange {exchange_name}: {e}")
             raise
@@ -267,9 +259,7 @@ class RabbitMQClient:
                 f"Bound queue {queue_name} to exchange {exchange_name} with routing key '{routing_key}'"
             )
         except AMQPChannelError as e:
-            self.logger.error(
-                f"Failed to bind queue {queue_name} to exchange {exchange_name}: {e}"
-            )
+            self.logger.error(f"Failed to bind queue {queue_name} to exchange {exchange_name}: {e}")
             raise
 
     def register_consumers(self, consumers: List[Consumer]):
@@ -295,9 +285,7 @@ class RabbitMQClient:
                     on_message_callback=consumer.callback,
                     auto_ack=consumer.auto_ack,
                 )
-                self.logger.debug(
-                    f"Registered consumer for queue: {consumer.queue_name}"
-                )
+                self.logger.debug(f"Registered consumer for queue: {consumer.queue_name}")
             except AMQPChannelError as e:
                 self.logger.error(
                     f"Failed to register consumer for queue {consumer.queue_name}: {e}"
@@ -369,9 +357,7 @@ class RabbitMQClient:
                 f"Published event to exchange '{exchange_name}' with routing key '{routing_key}' (type={type}, id={event.get('id')})"
             )
         except AMQPChannelError as e:
-            self.logger.error(
-                f"Failed to publish event to exchange {exchange_name}: {e}"
-            )
+            self.logger.error(f"Failed to publish event to exchange {exchange_name}: {e}")
             raise
         except Exception as e:
             self.logger.error(f"Unexpected error publishing event: {e}")
