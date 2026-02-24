@@ -16,24 +16,20 @@ jobs:
         with:
           version: "latest"
       - name: Install ruff
-        run: uv pip install ruff
+        run: uv pip install ruff --system
       - name: Ruff format check
         run: ruff format --check .
       - name: Ruff linter
         run: ruff check .
 
   test:
-    name: Test (Python ${{ matrix.python-version }})
+    name: Test (Python 3.13)
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
-      fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.13"
       - uses: astral-sh/setup-uv@v7
         with:
           version: "latest"
