@@ -74,7 +74,7 @@ class TestRabbitMQClientInit:
         assert client.prefetch_count == 10
 
     def test_setup_topology_called(self, mock_pika):
-        client = RabbitMQClient(rabbitmq_url="amqp://localhost")
+        RabbitMQClient(rabbitmq_url="amqp://localhost")
         mock_pika["publisher_channel"].exchange_declare.assert_called()
         mock_pika["consumer_channel"].queue_declare.assert_called()
         mock_pika["consumer_channel"].queue_bind.assert_called()
@@ -103,7 +103,7 @@ class TestPublishEvent:
         """Runtime validation rejects types not in ALL_EVENTS, even if passed as a raw string
         (Python doesn't enforce type hints at runtime)."""
         client = RabbitMQClient(rabbitmq_url="amqp://localhost")
-        with pytest.raises(UnsupportedEventTypeError, match="nonexistent.event"):
+        with pytest.raises(UnsupportedEventTypeError, match=r"nonexistent\.event"):
             client.publish_event(
                 routing_key="test",
                 type="nonexistent.event",
@@ -143,7 +143,10 @@ class TestPublishEvent:
 class TestConsumerRegistration:
     def test_register_consumers(self, mock_pika):
         client = RabbitMQClient(rabbitmq_url="amqp://localhost")
-        cb = lambda ch, method, props, body: None
+
+        def cb(ch, method, props, body):
+            pass
+
         consumers = [
             Consumer(queue_name=Queue.Name.USER_EVENTS, callback=cb),
         ]
@@ -153,7 +156,10 @@ class TestConsumerRegistration:
     def test_identical_consumers_deduplicated(self, mock_pika):
         """Same queue + same callback reference = duplicate, only added once."""
         client = RabbitMQClient(rabbitmq_url="amqp://localhost")
-        cb = lambda ch, method, props, body: None
+
+        def cb(ch, method, props, body):
+            pass
+
         consumers = [
             Consumer(queue_name=Queue.Name.USER_EVENTS, callback=cb),
             Consumer(queue_name=Queue.Name.USER_EVENTS, callback=cb),
@@ -164,8 +170,13 @@ class TestConsumerRegistration:
     def test_different_callbacks_same_queue_both_registered(self, mock_pika):
         """Same queue but different callbacks are treated as distinct consumers."""
         client = RabbitMQClient(rabbitmq_url="amqp://localhost")
-        cb1 = lambda ch, method, props, body: None
-        cb2 = lambda ch, method, props, body: None
+
+        def cb1(ch, method, props, body):
+            pass
+
+        def cb2(ch, method, props, body):
+            pass
+
         consumers = [
             Consumer(queue_name=Queue.Name.USER_EVENTS, callback=cb1),
             Consumer(queue_name=Queue.Name.USER_EVENTS, callback=cb2),

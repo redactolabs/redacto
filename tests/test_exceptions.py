@@ -9,7 +9,7 @@ class TestExceptions:
             raise ConfigurationError("missing url")
 
     def test_unsupported_event_type_error(self):
-        with pytest.raises(UnsupportedEventTypeError, match="bad.event"):
+        with pytest.raises(UnsupportedEventTypeError, match=r"bad\.event"):
             raise UnsupportedEventTypeError("bad.event")
 
     def test_configuration_error_is_exception(self):

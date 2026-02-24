@@ -59,7 +59,9 @@ class TestQueue:
 
 class TestConsumer:
     def test_create(self):
-        cb = lambda *args: None
+        def cb(*args):
+            return None
+
         consumer = Consumer(
             queue_name=Queue.Name.USER_EVENTS,
             callback=cb,
@@ -69,9 +71,12 @@ class TestConsumer:
         assert consumer.auto_ack is True
 
     def test_auto_ack_override(self):
+        def cb(*args):
+            return None
+
         consumer = Consumer(
             queue_name=Queue.Name.VRM_EVENTS,
-            callback=lambda *args: None,
+            callback=cb,
             auto_ack=False,
         )
         assert consumer.auto_ack is False
