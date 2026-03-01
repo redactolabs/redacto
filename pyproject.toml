@@ -27,5 +27,5 @@ target-version = "py311"
 select = ["E", "F", "I", "N", "W"]
 
 [build-system]
-requires = ["uv_build>=0.9.8,<0.10.0"]
+requires = ["uv_build>=0.9.8,<0.11.0"]
 build-backend = "uv_build"
